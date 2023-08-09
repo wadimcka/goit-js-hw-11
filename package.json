@@ -5,7 +5,8 @@
   "homepage": "https://wadimcka.github.io/goit-js-hw-11",
   "scripts": {
     "start": "parcel src/*.html",
-    "build": "parcel build src/*.html --public-url /goit-js-hw-11/"
+    "build": "parcel build src/*.html --public-url /goit-js-hw-11/",
+    "go": "node src/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,13 +19,17 @@
     "url": "https://github.com/goitacademy/parcel-project-template/issues"
   },
   "dependencies": {
-    "modern-normalize": "^1.1.0"
+    "axios": "^1.4.0",
+    "modern-normalize": "^1.1.0",
+    "notiflix": "^3.2.6"
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.6.0",
+    "buffer": "^6.0.3",
     "parcel": "^2.6.0",
     "parcel-reporter-clean-dist": "^1.0.4",
     "posthtml-include": "^1.7.4"
   },
-  "browserslist": "> 0.5%, last 2 versions, not dead"
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "type": "module"
 }
