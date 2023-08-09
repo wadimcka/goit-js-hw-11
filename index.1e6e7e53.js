@@ -1,0 +1,2 @@
+const e={formEl:document.querySelector("#search-form"),galleryEl:document.querySelector(".gallery"),loadMoreBtnEl:document.querySelector(".load-more")};console.log(e.loadMoreBtnEl);const o={params:{key:"38718917-264583084f4f4e3ea3ed33372",q:"",image_type:"photo",orientation:"horizontal",safesearch:!0,page:1,per_page:40}};e.formEl.addEventListener("submit",(function(e){e.preventDefault(),o.q=e.currentTarget.elements.searchQuery.value,console.log(o.q)})),e.loadMoreBtnEl.addEventListener("click",(function(e){}));
+//# sourceMappingURL=index.1e6e7e53.js.map
