@@ -1,56 +1,115 @@
-import axios from 'axios';
+import { ImgApi } from './img-api';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const refs = {
   formEl: document.querySelector('#search-form'),
   galleryEl: document.querySelector('.gallery'),
   loadMoreBtnEl: document.querySelector('.load-more'),
 };
-console.log(refs.loadMoreBtnEl);
 
-const API_KEY = '38718917-264583084f4f4e3ea3ed33372';
-const BASE_URL = 'https://pixabay.com/api/';
-const options = {
-  params: {
-    key: API_KEY,
-    q: '',
-    image_type: 'photo',
-    orientation: 'horizontal',
-    safesearch: true,
-    page: 1,
-    per_page: 40,
-  },
-};
+const pixaImgApi = new ImgApi();
 
 refs.formEl.addEventListener('submit', onFormSubmit);
 refs.loadMoreBtnEl.addEventListener('click', onloadMoreBtn);
 
 function onFormSubmit(event) {
   event.preventDefault();
-  options.q = event.currentTarget.elements.searchQuery.value;
-  console.log(options.q);
+  pixaImgApi.query = event.currentTarget.elements.searchQuery.value.trim();
+
+  if (!pixaImgApi.query) {
+    pixaImgApi.bugReport(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+    return;
+  }
+
+  pixaImgApi.resetNamberPage();
+  cardCleaner();
+
+  try {
+    pixaImgApi
+      .fetchImages()
+      .then(data => {
+        if (!data.length) {
+          pixaImgApi.bugReport(
+            'Sorry, there are no images matching your search query. Please try again.'
+          );
+          refs.loadMoreBtnEl.classList.remove('visible');
+          return;
+        }
+        pixaImgApi.successReport(
+          `Hooray! We found ${pixaImgApi.wholeHits} images.`
+        );
+        cardRender(data);
+        refs.loadMoreBtnEl.classList.add('visible');
+      })
+      .catch(error => {
+        console.log(error.name, error.message);
+      });
+  } catch (error) {
+    console.log(error.name, error.message);
+  }
 }
 
-function onloadMoreBtn(event) {}
+async function cardRender(data) {
+  const imgCard = await data
+    .map(hit => {
+      const {
+        total,
+        webformatURL,
+        largeImageURL,
+        id,
+        likes,
+        views,
+        comments,
+        downloads,
+      } = hit;
 
-// async function fetchImages(query) {
-//   try {
-//     const response = await axios.get(BASE_URL, options);
-//     const data = response.data;
-//     return data.hits;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
+      return `<div class="photo-card">
+      <a class="gallery__link" href="${largeImageURL}">
+  <img src="${webformatURL}" alt="${id}" loading="lazy" />  
+  </a>
+  <div class="info">
+    <p class="info-item">
+      <b>Likes ${likes}</b>
+    </p>
+    <p class="info-item">
+      <b>Views ${views}</b>
+    </p>
+    <p class="info-item">
+      <b>Comments ${comments}</b>
+    </p>
+    <p class="info-item">
+      <b>Downloads ${downloads}</b> 
+    </p>
+  </div>
+</div>
+  `;
+    })
+    .join('');
+  refs.galleryEl.insertAdjacentHTML('beforeend', imgCard);
+  const lightbox = new SimpleLightbox('.gallery a', {});
+  lightbox.refresh();
+}
 
-// async function main() {
-//   try {
-//     const images = await fetchImages('cat');
-//     console.log(images);
-//   } catch (error) {
-//     console.error('Error fetching images:', error);
-//   }
-// }
+async function onloadMoreBtn(event) {
+  try {
+    const loadedData = await pixaImgApi.fetchImages();
 
-// main();
+    if (pixaImgApi.availableHits > 0) {
+      cardRender(loadedData);
+    } else {
+      refs.loadMoreBtnEl.classList.add('is-hidden');
+      pixaImgApi.bugReport(
+        "We're sorry, but you've reached the end of search results."
+      );
+    }
+  } catch (error) {
+    console.log(error.name, error.message);
+  }
+}
 
-// trim
+function cardCleaner() {
+  refs.galleryEl.innerHTML = '';
+}
