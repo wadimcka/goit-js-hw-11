@@ -35,9 +35,9 @@ export class ImgApi {
 
     const data = response.data.hits;
 
-    this.page += 1;
     this.wholeHits = response.data.totalHits;
     this.availableHits = this.wholeHits - this.page * this.perPage;
+    this.page += 1;
 
     return data;
   }

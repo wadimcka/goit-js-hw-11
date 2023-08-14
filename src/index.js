@@ -95,15 +95,18 @@ async function cardRender(data) {
 
 async function onloadMoreBtn(event) {
   try {
-    const loadedData = await pixaImgApi.fetchImages();
-
-    if (pixaImgApi.availableHits > 0) {
-      cardRender(loadedData);
-    } else {
-      refs.loadMoreBtnEl.classList.add('is-hidden');
+    if (pixaImgApi.availableHits <= pixaImgApi.perPage) {
+      refs.loadMoreBtnEl.classList.remove('visible');
       pixaImgApi.bugReport(
         "We're sorry, but you've reached the end of search results."
       );
+    }
+    const loadedData = await pixaImgApi.fetchImages();
+    console.log(pixaImgApi.availableHits);
+    console.log(pixaImgApi.perPage);
+
+    if (loadedData.length > 0) {
+      cardRender(loadedData);
     }
   } catch (error) {
     console.log(error.name, error.message);
