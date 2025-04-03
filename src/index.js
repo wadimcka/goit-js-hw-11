@@ -122,9 +122,9 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 import fetchPhoto from './js/pixabay-api';
-import simpleLightbox from './js/helpers.js/simpleLightbox';
+import simpleLightbox from './js/helpers/simpleLightbox';
 import renderGalleryCartList from './js/markup';
-import smoothScroll from './js/helpers.js/scroll';
+import smoothScroll from './js/helpers/scroll';
 import { refs } from './js/refs';
 
 let searchQuery = '';
